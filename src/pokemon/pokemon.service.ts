@@ -6,6 +6,7 @@ import { Pokemon } from './entities/pokemon.entity';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 import { NotFoundException } from '@nestjs/common';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class PokemonService {
@@ -29,8 +30,15 @@ export class PokemonService {
 
   }
 
-  findAll() {
-    return `This action returns all pokemon`;
+  findAll(paginationDto:PaginationDto) {
+
+    const {limit = 10, offset = 0} = paginationDto;
+
+    return this.pokemonModel.find()
+      .limit ( limit )
+      .skip ( offset )//find() es un metodo de mongoose que nos permite buscar todos los documentos de la coleccion
+      .sort({no: 1})//sort() es un metodo de mongoose que nos permite ordenar los documentos de la coleccion
+      .select('-__v');//select() es un metodo de mongoose que nos permite seleccionar los campos que queremos mostrar
   }
 
   async findOne(term: string) {
